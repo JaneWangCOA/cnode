@@ -1,10 +1,10 @@
 <template>
   <div class="post">
-    <div class="loading" v-if="isLoading">
+    <div class="loading" v-show="isLoading">
       <img src="../assets/loading.gif" alt />
     </div>
-    <div class="post-list" v-else>
-      <ul class="nav-bar">
+    <div class="post-list">
+      <ul class="nav-bar" @click="changeType" ref="bar">
         <li>
           <a class="active">全部</a>
         </li>
@@ -24,15 +24,17 @@
           <a>客户端测试</a>
         </li>
       </ul>
-      <ul class="post-content">
-        <li v-for="(post,index) in posts" :key="index" @click="print(post)" class="post-item">
-          <router-link :to="{
+      <ul class="post-content" v-show="!isLoading">
+        <li v-for="(post,index) in posts" :key="index" class="post-item">
+          <router-link
+            :to="{
           name:'user_info',
           params:{
             name:post.author.loginname
           }
-          }">
-            <img :src="post.author.avatar_url" alt="">
+          }"
+          >
+            <img :src="post.author.avatar_url" alt />
           </router-link>
           <div class="post-count">
             <span class="reply-count">{{post.reply_count}}</span>
@@ -42,37 +44,61 @@
           <span
             :class="[{put_good:(post.good === true)},{put_top:(post.top === true)},{topiclist_tab:(post.top !== true && post.good !== true)}]"
           >{{post |tabFormatter}}</span>
-          <router-link class="post-title" :to="{name:'post_content',params:{id:post.id,name:post.author.loginname}}">
-            <span >{{post.title}}</span>
+          <router-link
+            class="post-title"
+            :to="{name:'post_content',params:{id:post.id,name:post.author.loginname}}"
+          >
+            <span>{{post.title}}</span>
           </router-link>
           <span class="last-reply">{{post.last_reply_at | formatDate}}</span>
         </li>
       </ul>
     </div>
+    <ThePage @handleList="renderList" :page="postpage"></ThePage>
   </div>
 </template>
 
 <script>
+import ThePage from "./ThePage";
 export default {
   name: "PostList",
   data() {
     return {
       isLoading: false,
-      posts: []
+      posts: [],
+      postpage: 1,
+      type: "全部",
+      typelist: {
+        全部: [, ""],
+        精华: [true, "good"],
+        置顶: [true, "top"],
+        问答: [true, "ask"],
+        分享: [true, "share"],
+        招聘: [true, "job"]
+      },
+      checker: ""
     };
   },
   beforeMount() {
     this.isLoading = true;
     this.getData();
   },
+  mounted() {
+    const ul = this.$refs.post;
+    console.log(ul);
+  },
   methods: {
     async getData() {
       try {
+        this.isLoading = true;
         const dataBody = await this.$http.get(
           "https://cnodejs.org/api/v1/topics",
           {
-            page: 1,
-            limit: 20
+            params: {
+              page: this.postpage,
+              limit: 20,
+              tab: this.checker
+            }
           }
         );
         this.posts = dataBody.data.data;
@@ -84,30 +110,36 @@ export default {
         console.log(error);
       }
     },
-    print(post) {
-      console.log(post);
+    changeType(event) {
+      this.type = event.target.innerText;
+      this.checker = this.typelist[this.type][1];
+      const bar = this.$refs.bar.children
+      for(let i = 0; i < 6;i++){
+        bar[i].children[0].className = ""
+      }
+      event.target.className = "active"
+      this.postpage = 1
+      this.getData();
+    },
+    renderList(value) {
+      this.postpage = value;
+      this.getData();
     }
+  },
+  components: {
+    ThePage
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.post-list {
+.post {
   border-radius: 5px;
   background-color: #fff;
+  width: 100%;
   max-width: 1200px;
-  margin-right: 30px;
-  position: relative;
-  left: 50%;
-  transform: translate(-50%);
   box-sizing: border-box;
-}
-
-.loading {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-bottom: 150px;
 }
 img {
   height: 30px;
@@ -175,7 +207,7 @@ img {
   font-size: 16px;
   white-space: nowrap;
   max-width: 70%;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
   overflow: hidden;
   margin-left: 5px;
 }
