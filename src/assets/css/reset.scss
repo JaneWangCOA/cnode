@@ -1,0 +1,84 @@
+html,
+body,
+div,
+section,
+p,
+ul,
+li,
+ol,
+dl,
+dt,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+table,
+th,
+tr,
+td,
+button,
+header,
+main,
+article,
+input {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-spacing: 0;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+ul,
+li,
+ol {
+  list-style: none;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  margin: 0 auto;
+  user-select: none;
+  background-color: #e1e1e1;
+}
+
+img {
+  user-select: none;
+}
+
+input:active,
+input:focus {
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  outline: none;
+}
+
+body {
+  font-family: "PingFang SC", "Source Han Sans CN", "Noto Sans", "Helvetica Neue", Helvetica, "Nimbus Sans L", Arial,
+    "Liberation Sans", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Source Han Sans CN",
+    "Microsoft YaHei", "Wenquanyi Micro Hei", "WenQuanYi Zen Hei", "ST Heiti", SimHei, "WenQuanYi Zen Hei Sharp",
+    sans-serif;
+}
